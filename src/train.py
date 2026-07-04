@@ -18,16 +18,18 @@ def prepare_data():
     print("Loading feature table...")
     df = pd.read_csv(DATA_PATH)
 
-    # Encode categorical columns
+    # Encode categorical columns — one encoder per column, saved for deployment
     cat_cols = [
         "NAME_CONTRACT_TYPE", "CODE_GENDER", "FLAG_OWN_CAR",
         "FLAG_OWN_REALTY", "NAME_INCOME_TYPE", "NAME_EDUCATION_TYPE",
         "NAME_FAMILY_STATUS", "NAME_HOUSING_TYPE"
     ]
-    le = LabelEncoder()
+    label_encoders = {}
     for col in cat_cols:
+        le = LabelEncoder()
         df[col] = df[col].astype(str)
         df[col] = le.fit_transform(df[col])  # type: ignore
+        label_encoders[col] = le
 
     # Drop ID column
     df.drop(columns=["SK_ID_CURR"], inplace=True)
@@ -47,10 +49,10 @@ def prepare_data():
 
     print(f"  Features shape: {X.shape}")
     print(f"  Default rate: {y.mean():.2%}")
-    return X, y
+    return X, y, label_encoders
 
 def train():
-    X, y = prepare_data()
+    X, y, label_encoders = prepare_data()
 
     # Time-honest split — no shuffling games
     X_train, X_test, y_train, y_test = train_test_split(
@@ -89,11 +91,13 @@ def train():
     xgb_auc = roc_auc_score(y_test, xgb_pred)  # type: ignore
     print(f"  XGBoost ROC-AUC: {xgb_auc:.4f}")
 
-    # Save best model and feature names
-    print("\nSaving XGBoost model...")
+    # Save best model, feature names, and label encoders
+    print("\nSaving XGBoost model and encoders...")
     joblib.dump(xgb, MODEL_DIR / "creditbridge_model.pkl")
     joblib.dump(list(X.columns), MODEL_DIR / "feature_names.pkl")
+    joblib.dump(label_encoders, MODEL_DIR / "label_encoders.pkl")
     print(f"  Model saved to models/creditbridge_model.pkl")
+    print(f"  Label encoders saved to models/label_encoders.pkl")
 
     print("\n--- Final Evaluation (XGBoost) ---")
     xgb_labels = (xgb_pred >= 0.5).astype(int)
