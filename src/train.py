@@ -27,7 +27,7 @@ def prepare_data():
     le = LabelEncoder()
     for col in cat_cols:
         df[col] = df[col].astype(str)
-        df[col] = le.fit_transform(df[col])
+        df[col] = le.fit_transform(df[col])  # type: ignore
 
     # Drop ID column
     df.drop(columns=["SK_ID_CURR"], inplace=True)
@@ -61,7 +61,7 @@ def train():
     # SMOTE on training set only — never on test
     print("\nApplying SMOTE to training set...")
     smote = SMOTE(random_state=42)
-    X_train_sm, y_train_sm = smote.fit_resample(X_train, y_train)
+    X_train_sm, y_train_sm = smote.fit_resample(X_train, y_train)  # type: ignore
     print(f"  After SMOTE — Train size: {len(X_train_sm):,}")
 
     # Baseline: Logistic Regression
@@ -86,7 +86,7 @@ def train():
     )
     xgb.fit(X_train_sm, y_train_sm)
     xgb_pred = xgb.predict_proba(X_test)[:, 1]
-    xgb_auc = roc_auc_score(y_test, xgb_pred)
+    xgb_auc = roc_auc_score(y_test, xgb_pred)  # type: ignore
     print(f"  XGBoost ROC-AUC: {xgb_auc:.4f}")
 
     # Save best model and feature names
@@ -97,7 +97,7 @@ def train():
 
     print("\n--- Final Evaluation (XGBoost) ---")
     xgb_labels = (xgb_pred >= 0.5).astype(int)
-    print(classification_report(y_test, xgb_labels))
+    print(classification_report(y_test, xgb_labels))  # type: ignore
     print(f"ROC-AUC: {xgb_auc:.4f}")
     print(f"\nBaseline LR AUC: {lr_auc:.4f}")
     print(f"XGBoost AUC:     {xgb_auc:.4f}")

@@ -25,7 +25,7 @@ def build_features():
         FROM bureau
         GROUP BY "SK_ID_CURR"
     """
-    bureau_features = pd.read_sql(bureau_sql, engine)
+    bureau_features = pd.read_sql(bureau_sql, engine)  # type: ignore
     print(f"  Bureau features: {len(bureau_features):,} applicants")
 
     print("Building application features...")
@@ -56,7 +56,7 @@ def build_features():
         FROM application
         WHERE "TARGET" IS NOT NULL
     """
-    app_features = pd.read_sql(app_sql, engine)
+    app_features = pd.read_sql(app_sql, engine)  # type: ignore
     print(f"  Application features: {len(app_features):,} applicants")
 
     print("Joining and engineering features...")

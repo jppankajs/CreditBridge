@@ -28,7 +28,7 @@ def generate_shap_plots():
     le = LabelEncoder()
     for col in cat_cols:
         df[col] = df[col].astype(str)
-        df[col] = le.fit_transform(df[col])
+        df[col] = le.fit_transform(df[col])  # type: ignore
 
     df.drop(columns=["SK_ID_CURR", "TARGET", "EXT_SOURCE_1"],
             errors="ignore", inplace=True)

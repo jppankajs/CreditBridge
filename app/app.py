@@ -73,7 +73,7 @@ from sklearn.preprocessing import LabelEncoder
 def encode(val, options):
     le = LabelEncoder()
     le.fit(options)
-    return int(le.transform([val])[0])
+    return int(le.transform([val])[0])  # type: ignore
 
 is_credit_invisible = 1 if bureau_loans == 0 else 0
 credit_to_income = credit_amt / (income + 1)
@@ -190,4 +190,4 @@ else:
     - Risk is categorized into Low / Medium / High tiers
 
     **Tech Stack:** PostgreSQL · XGBoost · SHAP · Streamlit · Python
-    """)
+    """)
