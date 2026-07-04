@@ -13,7 +13,7 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 def generate_shap_plots():
     print("Loading model and data...")
-    model = joblib.load(MODEL_DIR / "creditbridge_model.pkl")
+    model = joblib.load(MODEL_DIR / "creditbridge_xgb_raw.pkl")
     feature_names = joblib.load(MODEL_DIR / "feature_names.pkl")
 
     df = pd.read_csv(DATA_PATH)
@@ -32,7 +32,6 @@ def generate_shap_plots():
 
     df.drop(columns=["SK_ID_CURR", "TARGET", "EXT_SOURCE_1"],
             errors="ignore", inplace=True)
-    df.fillna(df.median(numeric_only=True), inplace=True)
     df = df[feature_names]
 
     # Sample 2000 rows for SHAP speed

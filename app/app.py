@@ -74,10 +74,14 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("External Credit Scores")
 st.sidebar.caption(
     "Scores from external credit bureaus (0 = worst, 1 = best). "
-    "These are the model's most influential features. If unknown, leave at 0.5."
+    "If the applicant has no external history, check 'Unknown' to let the model use its learned missing-value logic."
 )
-ext_source_2 = st.sidebar.slider("External Score 2", 0.0, 1.0, 0.5, step=0.01)
-ext_source_3 = st.sidebar.slider("External Score 3", 0.0, 1.0, 0.5, step=0.01)
+
+ext2_unknown = st.sidebar.checkbox("Ext Source 2 Unknown", value=True)
+ext_source_2 = np.nan if ext2_unknown else st.sidebar.slider("External Score 2", 0.0, 1.0, 0.5, step=0.01)
+
+ext3_unknown = st.sidebar.checkbox("Ext Source 3 Unknown", value=True)
+ext_source_3 = np.nan if ext3_unknown else st.sidebar.slider("External Score 3", 0.0, 1.0, 0.5, step=0.01)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Credit Bureau History")
@@ -186,7 +190,7 @@ if st.sidebar.button("Assess Credit Risk", type="primary"):
     st.caption(
         "Each bar shows how a feature pushed the prediction toward default (red/positive) "
         "or away from it (blue/negative). Values are in log-odds — the model's internal "
-        "scoring scale. The final probability shown above is the logistic transform of this sum."
+        "scoring scale. The final probability shown above is a calibrated transformation of this sum, representing true real-world risk."
     )
 
     shap_vals = explainer.shap_values(input_df)
@@ -222,7 +226,7 @@ else:
 
     **How it works:**
     - Enter applicant details including income, loan request, and any existing credit history
-    - XGBoost model predicts default probability (ROC-AUC: 0.716)
+    - Calibrated XGBoost model predicts real-world default probability
     - SHAP explainability shows exactly which factors drove the decision
     - Risk is categorized into Low / Medium / High tiers
 
