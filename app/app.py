@@ -119,6 +119,9 @@ if bureau_overdue > bureau_loans and bureau_loans > 0:
 for w in warnings:
     st.sidebar.warning(w)
 
+st.sidebar.markdown("---")
+st.sidebar.markdown("<div style='text-align: center; color: gray;'><small>Built by <b>jp_project's</b></small></div>", unsafe_allow_html=True)
+
 # ──────────────────────────────────────────────
 # Feature Engineering (mirrors train.py exactly)
 # ──────────────────────────────────────────────
