@@ -15,7 +15,9 @@ def load_artifacts():
     feature_names = joblib.load(MODEL_DIR / "feature_names.pkl")
     explainer = joblib.load(MODEL_DIR / "shap_explainer.pkl")
     encoders = joblib.load(MODEL_DIR / "label_encoders.pkl")
-    return model, feature_names, explainer, encoders
+    threshold_path = MODEL_DIR / "optimal_threshold.pkl"
+    threshold = joblib.load(threshold_path) if threshold_path.exists() else 0.5
+    return model, feature_names, explainer, encoders, threshold
 
 st.set_page_config(
     page_title="CreditBridge",
@@ -27,7 +29,7 @@ st.title("🏦 CreditBridge")
 st.markdown("**Explainable Credit Risk Scoring for India's Credit-Invisible Population**")
 st.markdown("---")
 
-model, feature_names, explainer, encoders = load_artifacts()
+model, feature_names, explainer, encoders, RISK_THRESHOLD = load_artifacts()
 
 def encode(val, col_name):
     """Encode using the SAME fitted encoder from training — no re-fitting."""
@@ -174,9 +176,10 @@ if st.sidebar.button("Assess Credit Risk", type="primary"):
     with col1:
         st.metric("Default Probability", f"{prob:.1%}")
     with col2:
-        if prob < 0.3:
+        # Risk tiers based on the optimal threshold from training
+        if prob < RISK_THRESHOLD:
             risk = "🟢 LOW RISK"
-        elif prob < 0.6:
+        elif prob < RISK_THRESHOLD * 2.5:
             risk = "🟡 MEDIUM RISK"
         else:
             risk = "🔴 HIGH RISK"
