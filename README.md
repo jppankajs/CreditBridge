@@ -2,6 +2,8 @@
 
 **Explainable Credit Risk Scoring for India's Credit-Invisible Population**
 
+🚀 **Live Demo:** [creditbridge.streamlit.app](https://creditbridge.streamlit.app/)
+
 Built on the [Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk) dataset (307,511 applicants).
 
 ## Features
